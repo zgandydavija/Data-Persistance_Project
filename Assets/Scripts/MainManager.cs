@@ -11,6 +11,7 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text BestScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
@@ -18,10 +19,17 @@ public class MainManager : MonoBehaviour
     
     private bool m_GameOver = false;
 
+    public GameObject startAndSave;
+    public string playerNameString;
+
     
     // Start is called before the first frame update
     void Start()
     {
+        playerNameString = GameObject.Find("StartAndSave").GetComponent<StartAndSave>().playerNameString;
+        ScoreText.text = "Score | " + playerNameString + ": 0";
+        BestScoreText.text = "Best Score | " + GameObject.Find("StartAndSave").GetComponent<StartAndSave>().bestPlayer + ": " + GameObject.Find("StartAndSave").GetComponent<StartAndSave>().bestScore;
+
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -65,7 +73,15 @@ public class MainManager : MonoBehaviour
     void AddPoint(int point)
     {
         m_Points += point;
-        ScoreText.text = $"Score : {m_Points}";
+        //ScoreText.text = $"Score : {m_Points}";
+        ScoreText.text = "Score | " + playerNameString + ": " + m_Points;
+        if(m_Points > GameObject.Find("StartAndSave").GetComponent<StartAndSave>().bestScore)
+        {
+            BestScoreText.text = "Best Score | " + playerNameString + ": " + m_Points;
+            GameObject.Find("StartAndSave").GetComponent<StartAndSave>().bestScore = m_Points;
+            GameObject.Find("StartAndSave").GetComponent<StartAndSave>().bestPlayer = playerNameString;
+            GameObject.Find("StartAndSave").GetComponent<SaveManager>().SaveData();
+        }
     }
 
     public void GameOver()
